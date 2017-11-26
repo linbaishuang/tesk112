@@ -7,19 +7,17 @@ module.exports.main = function main() {
 };
 
 module.exports.printInventory = function printInventory(inputs) {
-    var str = "";
-    var name = "";
+    var str = "";           //表示二维码
+    var name = "";      //商品名称
     var money = 0;
-    var loadarr = [];
-    var norarr = [];
-    var givearr = [];
-    var loadthings = [];
+    var givearr = [];       //赠送商品
+    var loadthings = [];    //购买的所有商品
     var printstr =  '***<没钱赚商店>购物清单***\n';
     var loadPromotions = datbase.loadPromotions();
     var loadAll = datbase.allItems();
 
     for(var i=0;i<inputs.length;i++){
-        //筛选出有几个
+        //筛选出购买商品的详细信息
         var inputitem = inputs[i];
         var itemnum;
         var count1 = 0;
@@ -66,7 +64,7 @@ module.exports.printInventory = function printInventory(inputs) {
         }
     }
 
-    //判断是否满足满二赠一
+    //筛选出打折商品并判断是否满足满二赠一
     for(var d=1;d<loadthings.length;){
         for(var e=0;e<loadPromotions[0].barcodes.length;e++){
             if(loadthings[d] === loadPromotions[0].barcodes[e]){
@@ -84,26 +82,23 @@ module.exports.printInventory = function printInventory(inputs) {
     var allmoney = 0;
     var savemoney =0;
     for(var f=0;f<loadthings.length;){
-        var printstrs1 = "名称：" +loadthings[f]+ "，数量：" +parseFloat(loadthings[f+2])+ "瓶，单价：" + loadthings[f+3];
-        var printstrs2 = "名称：" +loadthings[f]+ "，数量：" +parseFloat(loadthings[f+2])+ "斤，单价：" + loadthings[f+3];
-
         for(var g=0;g<givearr.length;){
             var deletemoney1 = loadthings[f+2] * loadthings[f+3] - givearr[g+1] * loadthings[f+3];
             if(loadthings[f] === givearr[g] && loadthings[f] === "方便面"){
                 printstr += "名称：" +loadthings[f]+ "，数量：" +parseFloat(loadthings[f+2])+ "袋，单价：" + loadthings[f+3] + "(元)，小计：" + deletemoney1.toFixed(2) + "(元)\n";
-                allmoney += deletemoney1;
-                savemoney += givearr[g+1] * loadthings[f+3];
+                allmoney += deletemoney1;         //小计
+                savemoney += givearr[g+1] * loadthings[f+3];    //节省的钱
                 break;
             }
             else if(loadthings[f] === givearr[g] && loadthings[f] === "雪碧"){
                 printstr += "名称：" +loadthings[f]+ "，数量：" +parseFloat(loadthings[f+2])+ "瓶，单价：" + loadthings[f+3] + "(元)，小计：" + deletemoney1.toFixed(2) + "(元)\n";
-                allmoney += deletemoney1;
-                savemoney += givearr[g+1] * loadthings[f+3];
+                allmoney += deletemoney1;       //小计
+                savemoney += givearr[g+1] * loadthings[f+3];        //节省的钱
                 break;
             }
             else if(g === givearr.length-2){
                 var deletemoney2 = loadthings[f+2] * loadthings[f+3];
-                printstr += printstrs2 + "(元)，小计：" + deletemoney2.toFixed(2) + "(元)\n";
+                printstr += "名称：" +loadthings[f]+ "，数量：" +parseFloat(loadthings[f+2])+ "斤，单价：" + loadthings[f+3] + "(元)，小计：" + deletemoney2.toFixed(2) + "(元)\n";
                 allmoney +=  deletemoney2;
                 break;
             }
@@ -124,13 +119,8 @@ module.exports.printInventory = function printInventory(inputs) {
         h = h+2;
     }
     printstr += '----------------------\n总计：' + allmoney.toFixed(2) + '(元)\n节省：' + savemoney.toFixed(2) + '(元)\n**********************' ;
-    //
-
 
     console.log(printstr);
-    // console.log(allmoney);
-    // console.log(loadthings);
-
 }
 
 
